@@ -1,0 +1,5 @@
+# Sample config file for the BitBot Discord Bot
+
+discord:
+  client_id:
+  bot_token:
