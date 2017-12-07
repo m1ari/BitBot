@@ -45,6 +45,14 @@ bot.command(:btc, min_args:0, max_args:1, description: 'List current price for B
   end
 end
 
+bot.server_create do |event|
+  puts "Added to new server #{event.server.id} #{event.server.name}"
+end
+
+bot.server_delete do |event|
+  puts "Removed from server server #{event.server.id} #{event.server.name}"
+end
+
 bot.run :async
 
 # Perm 3072: View Channels, Send Message
