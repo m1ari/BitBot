@@ -31,18 +31,22 @@ bot.command(:bittrex, min_args: 0, max_args:2, description: 'List current price 
   "last: #{bittrex.last.to_d.to_s('4F')}, Bid: #{bittrex.bid.to_d.to_s('4F')}, Ask: #{bittrex.ask.to_d.to_s('4F')}"
 end
 
-bot.command(:btc, min_args:0, max_args:1, description: 'List current price for BTC in fiat', usage: 'btc [currency]' ) do |event, currency|
+bot.command(:btc, min_args:0, description: 'List current price for BTC in fiat, multiple currencies can be listed', usage: 'btc [currency]' ) do |event, *currency|
   explorer = Blockchain::ExchangeRateExplorer.new
   ticker = explorer.get_ticker
-  curr = currency || 'USD'
-  if curr.downcase == 'help'
-    event << "!btc [Currency]"
-    event << "Currency can be one of #{ticker.keys.join(', ')}"
-  elsif ticker[curr.upcase].nil?
-    "Currency #{curr} not found"
-  else
-    ticker[curr.upcase].last
+  currency << 'USD' if currency.empty?
+  out = []
+  currency.each do |curr|
+    if curr.downcase == 'help'
+      event << "Help: *!btc [Currency]*"
+      event << "Help: *Currency can be one of #{ticker.keys.join(', ')}*"
+    elsif ticker[curr.upcase].nil?
+      event << "Info: *Currency #{curr} not found*"
+    else
+      out << "%s%.2f" % [ticker[curr.upcase].symbol, ticker[curr.upcase].last]
+    end
   end
+  out.join(' ')
 end
 
 bot.server_create do |event|
