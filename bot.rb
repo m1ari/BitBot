@@ -2,10 +2,9 @@
 
 require 'bundler/setup'
 require_relative 'lib/settings'
-require 'bittrex'
-require 'blockchain'
-require 'bigdecimal'
-require 'bigdecimal/util'
+require_relative 'lib/plugins'
+#require 'bigdecimal'
+#require 'bigdecimal/util'
 
 require 'discordrb'
 
@@ -14,40 +13,12 @@ Settings.load! "config.yaml"
 
 bot = Discordrb::Commands::CommandBot.new client_id: Settings.discord[:client_id], token: Settings.discord[:bot_token], prefix: '!'
 
-bot.command(:bittrex, min_args: 0, max_args:2, description: 'List current price on Bittrex for a coin', usage: 'markets [market] [market]')  do |event, market1, market2|
-  markets=[]
-  if market2
-    markets << market1.upcase
-    markets << market2.upcase
-  elsif market1
-    markets << 'BTC'
-    markets << market1.upcase
-  else
-    markets = %w(BTC EGC)
-    # TODO look this up in server config
-  end
-  bittrex=Bittrex::Quote.current(markets.join('-'))
-  # TODO Volume
-  "last: #{bittrex.last.to_d.to_s('4F')}, Bid: #{bittrex.bid.to_d.to_s('4F')}, Ask: #{bittrex.ask.to_d.to_s('4F')}"
-end
 
-bot.command(:btc, min_args:0, description: 'List current price for BTC in fiat, multiple currencies can be listed', usage: 'btc [currency]' ) do |event, *currency|
-  explorer = Blockchain::ExchangeRateExplorer.new
-  ticker = explorer.get_ticker
-  currency << 'USD' if currency.empty?
-  out = []
-  currency.each do |curr|
-    if curr.downcase == 'help'
-      event << "Help: *!btc [Currency]*"
-      event << "Help: *Currency can be one of #{ticker.keys.join(', ')}*"
-    elsif ticker[curr.upcase].nil?
-      event << "Info: *Currency #{curr} not found*"
-    else
-      out << "%s%.2f" % [ticker[curr.upcase].symbol, ticker[curr.upcase].last]
-    end
-  end
-  out.join(' ')
-end
+require_relative 'plugins/bittrex'
+bot.include! BitBot::Plugins::Bittrex
+
+require_relative 'plugins/btc'
+bot.include! BitBot::Plugins::BitCoin
 
 bot.server_create do |event|
   puts "Added to new server #{event.server.id} #{event.server.name}"
