@@ -20,6 +20,9 @@ bot.include! BitBot::Plugins::Bittrex
 require_relative 'plugins/btc'
 bot.include! BitBot::Plugins::BitCoin
 
+require_relative 'plugins/coinmarketcap'
+bot.include! BitBot::Plugins::CoinMarketCap
+
 bot.server_create do |event|
   puts "Added to new server #{event.server.id} #{event.server.name}"
 end
