@@ -46,22 +46,22 @@ module BitBot
         end
         # Starts a new game
         def start
-          # TODO Only allow restart if :new or :finished
           case @status
           when :new, :finished
             @guesses.clear
             @nki.clear
 
-            # TODO Decide where the kitten is
-            @kitten = 'a'
-            # Populate nki for non kitten letters
+            # Where's the kitten
+            @kitten = ('a'.ord+rand(26)).chr
 
+            # Populate nki for non kitten letters
             ('a'..'z').each do |l|
               # TODO Check we don't already have this NKI
               @nki[l] = NonKittenItem.get unless l == @kitten
             end
             @status=:running
-            'A new RFK game has started, can you find the kitten'
+            pp @nki
+            'A new RFK game has started, can **you** find the kitten?'
           when :running
             "There's a game running already are you sure you want to restart (you've got to win first)"
           else
@@ -80,12 +80,13 @@ module BitBot
               # We currently get a warning trying to send a message and add a reaction
               # [WARN : ct-3 @ 2018-02-26 17:49:52.182] Locking RL mutex (key: [:channels_cid_messages_mid_reactions_emoji_me, 417679731291324417]) for 1.0 seconds preemptively
               #event.message.react('😸')  # Smiley Cat
+              @status=:finished
               "Woo you found kitten"
             elsif @guesses.include?(guess)
               "someone already guessed `#{guess}`, the kitten doesn't move during a game"
             else
               @guesses << guess
-              @nki[guess]
+              "You found `#{@nki[guess]}` but that's not a kitten!"
             end
           else
             puts "We got a guess of #{guess} but not in a known state of #{@state}"
@@ -145,7 +146,7 @@ module BitBot
 
         # Get a random NKI
         def self.get
-          'Not a Kitten'
+          @@nkis[rand(@@nkis.count)]
         end
 
       end
