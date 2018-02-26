@@ -80,12 +80,12 @@ module BitBot
               # [WARN : ct-3 @ 2018-02-26 17:49:52.182] Locking RL mutex (key: [:channels_cid_messages_mid_reactions_emoji_me, 417679731291324417]) for 1.0 seconds preemptively
               #event.message.react('😸')  # Smiley Cat
               @status=:finished
-              "@#{event.message.author.mention} Woo you found kitten"
+              "#{event.message.author.mention} Woo you found kitten"
             elsif @guesses.include?(guess)
-              "@#{event.message.author.mention} someone already guessed `#{guess}`, the kitten doesn't move during a game"
+              "#{event.message.author.mention} someone already guessed `#{guess}`, the kitten doesn't move during a game"
             else
               @guesses << guess
-              "@#{event.message.author.mention} You found `#{@nki[guess]}` but that's not a kitten!"
+              "#{event.message.author.mention} You found `#{@nki[guess]}` but that's not a kitten!"
             end
           else
             puts "We got a guess of #{guess} but not in a known state of #{@state}"
