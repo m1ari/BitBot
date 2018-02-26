@@ -60,7 +60,7 @@ module BitBot
               @nki[l] = NonKittenItem.get unless l == @kitten
             end
             @status=:running
-            pp @nki
+            p @nki
             'A new RFK game has started, can **you** find the kitten?'
           when :running
             "There's a game running already are you sure you want to restart (you've got to win first)"
